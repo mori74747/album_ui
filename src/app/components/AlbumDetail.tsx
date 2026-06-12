@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { useState } from 'react';
-import { X, Share2, Play, Heart } from 'lucide-react';
+import { X, Share2, Play, Heart, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import { Album } from '../App';
 import PhotoViewer from './PhotoViewer';
 import AtmosphereEffect from './AtmosphereEffect';
@@ -46,6 +46,9 @@ const generateMockPhotos = (albumId: number, count: number) =>
 interface AlbumDetailProps {
   album: Album;
   onClose: () => void;
+  onMenuOpen?: () => void;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 type Layout = 'hero' | 'pair' | 'single' | 'trio';
@@ -66,7 +69,7 @@ function buildSections(photos: ReturnType<typeof generateMockPhotos>) {
   return sections;
 }
 
-export default function AlbumDetail({ album, onClose }: AlbumDetailProps) {
+export default function AlbumDetail({ album, onClose, onMenuOpen, onPrev, onNext }: AlbumDetailProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [showShare, setShowShare] = useState(false);
   const [likedPhotos, setLikedPhotos] = useState<Set<string>>(new Set());
@@ -123,6 +126,16 @@ export default function AlbumDetail({ album, onClose }: AlbumDetailProps) {
             >
               <X className="w-4 h-4" style={{ color: '#78350f' }} />
             </motion.button>
+            {onMenuOpen && (
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={onMenuOpen}
+                className="w-9 h-9 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(255,255,255,0.9)', border: '1.5px solid rgba(180,100,20,0.25)' }}
+              >
+                <Menu className="w-4 h-4" style={{ color: '#78350f' }} />
+              </motion.button>
+            )}
           </div>
         </div>
       </div>
@@ -205,6 +218,47 @@ export default function AlbumDetail({ album, onClose }: AlbumDetailProps) {
             — 大切な思い出、ずっとここに —
           </p>
         </motion.div>
+
+        {/* 前後アルバムナビ */}
+        {(onPrev || onNext) && (
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="flex gap-3 mt-4"
+          >
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={onPrev}
+              disabled={!onPrev}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-sm"
+              style={{
+                background: onPrev ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
+                border: '1.5px solid rgba(180,100,20,0.2)',
+                color: onPrev ? '#78350f' : '#c4a882',
+                fontWeight: 600,
+              }}
+            >
+              <ChevronLeft className="w-4 h-4" />
+              前のアルバム
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={onNext}
+              disabled={!onNext}
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl text-sm"
+              style={{
+                background: onNext ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.4)',
+                border: '1.5px solid rgba(180,100,20,0.2)',
+                color: onNext ? '#78350f' : '#c4a882',
+                fontWeight: 600,
+              }}
+            >
+              次のアルバム
+              <ChevronRight className="w-4 h-4" />
+            </motion.button>
+          </motion.div>
+        )}
       </div>
 
       {/* 写真ビューア */}

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Eye, Settings, Link, Users, Bell, HelpCircle, ChevronRight } from 'lucide-react';
+import { X, Eye, Settings, Link, Users, Bell, HelpCircle, ChevronRight, Monitor } from 'lucide-react';
 import { ViewMode } from '../App';
 
 interface HiddenMenuProps {
@@ -11,7 +11,8 @@ interface HiddenMenuProps {
 
 export default function HiddenMenu({ open, onClose, viewMode, onViewModeChange }: HiddenMenuProps) {
   const settingButtons = [
-    { icon: Link, label: '接続アルバムを作成', sublabel: '家族と共有するアルバム' },
+    { icon: Link, label: '接続', sublabel: 'ファミリーと動作共有/接続' },
+    { icon: Monitor, label: '大画面モード', sublabel: 'ファミリーと画面を共有\nスマホをつなげて大きな画面に' },
     { icon: Users, label: '家族メンバーを招待', sublabel: 'リンクで簡単に招待' },
     { icon: Bell, label: '通知設定', sublabel: '思い出の通知をカスタマイズ' },
     { icon: Settings, label: '設定', sublabel: 'アプリの各種設定' },
@@ -121,7 +122,7 @@ export default function HiddenMenu({ open, onClose, viewMode, onViewModeChange }
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm" style={{ color: '#78350f', fontWeight: 500 }}>{btn.label}</p>
-                        <p className="text-xs" style={{ color: '#a16207' }}>{btn.sublabel}</p>
+                        <p className="text-xs whitespace-pre-line" style={{ color: '#a16207' }}>{btn.sublabel}</p>
                       </div>
                       <ChevronRight className="w-4 h-4 flex-shrink-0" style={{ color: '#d97706' }} />
                     </button>
