@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Clock, TrendingUp, Search, Heart, BookOpen, Star, Mic, User } from 'lucide-react';
+import { Clock, Search, BookOpen, Star } from 'lucide-react';
 import { Album, ViewMode } from '../App';
+import GrowthChart from './GrowthChart';
 
 // ── データ ──────────────────────────────────────────────────────────────
 const recommendedAlbums: Album[] = [
@@ -27,10 +28,6 @@ const timeCapsules = [
   { id: 3, title: '家族みんなへ', scheduledDate: '2028年12月25日', thumb: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=200&h=200&fit=crop&auto=format', message: 'クリスマスに開けてください。', locked: false },
 ];
 
-const growthRecords = [
-  { id: 1, name: 'ゆい', age: '6歳', height: '112cm', thumb: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200&h=200&fit=crop&auto=format', milestones: ['初めての小学校', 'ピアノ発表会', 'お泳ぎ教室'] },
-  { id: 2, name: 'こうた', age: '3歳', height: '96cm', thumb: 'https://images.unsplash.com/photo-1519340241574-2cec6aef0c01?w=200&h=200&fit=crop&auto=format', milestones: ['初めての言葉', 'ひとりで歩けた', 'トイレ完了'] },
-];
 
 // おすすめ → アルバム一覧 → タイムカプセル → 成長記録
 const SECTIONS = ['おすすめ', 'アルバム一覧', 'タイムカプセル', '成長記録'] as const;
@@ -286,7 +283,7 @@ export default function Home({ onAlbumSelect, onMenuOpen }: HomeProps) {
 
           {/* 成長記録 */}
           {section === '成長記録' && (
-            <GrowthSection dir={dir} />
+            <GrowthChart key="growth" dir={dir} />
           )}
         </AnimatePresence>
       </div>
@@ -326,177 +323,3 @@ function SectionWrap({ children, dir }: { children: React.ReactNode; dir: 1 | -1
   );
 }
 
-type GrowthTab = 'events' | 'face' | 'voice';
-
-const faceGrowthData = [
-  { age: '0歳', src: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=200&h=200&fit=crop&auto=format', label: '赤ちゃん期' },
-  { age: '1歳', src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200&h=200&fit=crop&auto=format', label: 'よちよち' },
-  { age: '3歳', src: 'https://images.unsplash.com/photo-1555009393-f20bdb245c4d?w=200&h=200&fit=crop&auto=format', label: '元気いっぱい' },
-  { age: '6歳', src: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=200&h=200&fit=crop&auto=format', label: '今の笑顔' },
-];
-
-const voiceGrowthData = [
-  { label: '初めての「ママ」', date: '2021年3月', duration: '0:03', emoji: '👶' },
-  { label: 'お歌が歌えた', date: '2022年8月', duration: '0:12', emoji: '🎵' },
-  { label: 'ピアノ発表会', date: '2024年11月', duration: '1:45', emoji: '🎹' },
-  { label: '今日のひとこと', date: '2026年5月', duration: '0:08', emoji: '💬' },
-];
-
-function GrowthSection({ dir }: { dir: 1 | -1 }) {
-  const [selectedChild, setSelectedChild] = useState(0);
-  const [growthTab, setGrowthTab] = useState<GrowthTab>('events');
-  const child = growthRecords[selectedChild];
-
-  return (
-    <SectionWrap key="growth" dir={dir}>
-      <p style={{ fontSize: 12, color: '#92400e', marginBottom: 12 }}>子どもたちの大切な成長を記録しよう</p>
-
-      {/* 子ども選択 */}
-      <div className="flex gap-2 mb-4">
-        {growthRecords.map((r, i) => (
-          <button
-            key={r.id}
-            onClick={() => setSelectedChild(i)}
-            className="flex items-center gap-2 px-3 py-2 rounded-2xl transition-all"
-            style={{
-              background: selectedChild === i ? 'linear-gradient(135deg, #b45309, #d97706)' : 'rgba(255,255,255,0.8)',
-              border: '1.5px solid rgba(180,100,20,0.2)',
-              color: selectedChild === i ? '#fff' : '#78350f',
-              fontWeight: selectedChild === i ? 700 : 400,
-            }}
-          >
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0">
-              <img src={r.thumb} alt={r.name} className="w-full h-full object-cover" />
-            </div>
-            <span style={{ fontSize: 12 }}>{r.name}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* 子どもカード */}
-      <div className="rounded-2xl overflow-hidden mb-4" style={{ background: '#fff', boxShadow: '0 4px 20px rgba(100,50,0,0.1)' }}>
-        <div className="flex items-center gap-3 p-3.5" style={{ background: 'linear-gradient(135deg, #fef3c7, #fde68a)' }}>
-          <div className="rounded-full overflow-hidden flex-shrink-0 border-2" style={{ width: 50, height: 50, borderColor: '#d97706' }}>
-            <img src={child.thumb} alt={child.name} className="w-full h-full object-cover" />
-          </div>
-          <div>
-            <p style={{ fontSize: 16, fontWeight: 800, color: '#78350f' }}>{child.name}</p>
-            <div className="flex gap-3 mt-0.5">
-              <span style={{ fontSize: 11, color: '#92400e' }}>{child.age}</span>
-              <span style={{ fontSize: 11, color: '#92400e' }}>身長 {child.height}</span>
-            </div>
-          </div>
-          <TrendingUp className="ml-auto w-4 h-4" style={{ color: '#d97706' }} />
-        </div>
-
-        {/* タブ切り替え */}
-        <div className="flex border-b" style={{ borderColor: 'rgba(180,100,20,0.12)' }}>
-          {([
-            { key: 'events', label: '最近のできごと', icon: TrendingUp },
-            { key: 'face', label: '顔の成長', icon: User },
-            { key: 'voice', label: '声の成長', icon: Mic },
-          ] as { key: GrowthTab; label: string; icon: React.ElementType }[]).map(({ key, label, icon: Icon }) => (
-            <button
-              key={key}
-              onClick={() => setGrowthTab(key)}
-              className="flex-1 py-2.5 flex flex-col items-center gap-0.5 transition-all"
-              style={{
-                borderBottom: growthTab === key ? '2px solid #b45309' : '2px solid transparent',
-                color: growthTab === key ? '#b45309' : '#a16207',
-              }}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span style={{ fontSize: 10, fontWeight: growthTab === key ? 700 : 400 }}>{label}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="p-3.5">
-          {growthTab === 'events' && (
-            <div className="space-y-1.5">
-              {child.milestones.map((m, j) => (
-                <div key={j} className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#d97706' }} />
-                  <span style={{ fontSize: 13, color: '#78350f' }}>{m}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {growthTab === 'face' && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-3">
-                <div className="px-2 py-0.5 rounded-full" style={{ background: 'rgba(139,92,246,0.12)', color: '#7c3aed', fontSize: 10, fontWeight: 700 }}>
-                  ✦ AI解析
-                </div>
-                <span style={{ fontSize: 10, color: '#a16207' }}>アルバムから本人の写真をまとめました</span>
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                {faceGrowthData.map((f, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.07 }}
-                    className="flex-shrink-0 flex flex-col items-center gap-1"
-                  >
-                    <div className="rounded-xl overflow-hidden border-2" style={{ width: 64, height: 64, borderColor: '#d97706' }}>
-                      <img src={f.src} alt={f.age} className="w-full h-full object-cover" />
-                    </div>
-                    <span style={{ fontSize: 10, fontWeight: 700, color: '#78350f' }}>{f.age}</span>
-                    <span style={{ fontSize: 9, color: '#a16207' }}>{f.label}</span>
-                  </motion.div>
-                ))}
-              </div>
-              <p className="mt-3" style={{ fontSize: 11, color: '#6b7280' }}>
-                AIが{child.name}の顔を認識してアルバム全体から自動でまとめました。
-              </p>
-            </div>
-          )}
-
-          {growthTab === 'voice' && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-3">
-                <div className="px-2 py-0.5 rounded-full" style={{ background: 'rgba(139,92,246,0.12)', color: '#7c3aed', fontSize: 10, fontWeight: 700 }}>
-                  ✦ AI解析
-                </div>
-                <span style={{ fontSize: 10, color: '#a16207' }}>声の変化をAIが記録</span>
-              </div>
-              <div className="space-y-2">
-                {voiceGrowthData.map((v, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06 }}
-                    className="flex items-center gap-3 p-2.5 rounded-xl"
-                    style={{ background: 'rgba(180,100,20,0.05)' }}
-                  >
-                    <span style={{ fontSize: 20 }}>{v.emoji}</span>
-                    <div className="flex-1">
-                      <p style={{ fontSize: 13, fontWeight: 600, color: '#78350f' }}>{v.label}</p>
-                      <p style={{ fontSize: 10, color: '#a16207' }}>{v.date}</p>
-                    </div>
-                    <button
-                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl"
-                      style={{ background: 'rgba(180,100,20,0.12)', color: '#b45309', fontSize: 11, fontWeight: 700 }}
-                    >
-                      ▶ {v.duration}
-                    </button>
-                  </motion.div>
-                ))}
-              </div>
-              <p className="mt-3" style={{ fontSize: 11, color: '#6b7280' }}>
-                動画・ボイスメモからAIが{child.name}の声だけを抽出して時系列にまとめました。
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <motion.button whileTap={{ scale: 0.97 }} className="w-full py-3.5 rounded-2xl" style={{ background: 'linear-gradient(135deg, #b45309, #d97706)', color: '#fff', fontSize: 13, fontWeight: 700, boxShadow: '0 4px 16px rgba(180,100,20,0.3)' }}>
-        + 子どもを追加
-      </motion.button>
-    </SectionWrap>
-  );
-}
